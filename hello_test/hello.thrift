@@ -1,4 +1,0 @@
-service Hello
-{
-	void Hello()
-}
