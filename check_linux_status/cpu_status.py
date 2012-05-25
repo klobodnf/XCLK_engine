@@ -2,6 +2,7 @@
 
 import time
 
+## 读取文件/proc/stat的各种数据
 def _read_cpu_usage():  
     """Read the current system cpu usage from /proc/stat."""
     try:
