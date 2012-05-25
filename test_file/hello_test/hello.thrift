@@ -1,0 +1,4 @@
+service Hello
+{
+	void Hello()
+}

@@ -3,11 +3,11 @@
 import sys
 sys.path.append('gen-py')
 
-from cpuinfo import CpuStat
-from cpuinfo.ttypes import *
-
-sys.path.append('check_linux_status')
-import cpu_status
+from reportComputerStatus import slaveStatusInfoService
+from reportComputerStatus.ttypes import *
+#
+#sys.path.append('check_linux_status')
+#import cpu_status
 
 from thrift import Thrift
 from thrift.transport import TSocket
@@ -15,11 +15,11 @@ from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol
 
 
-def send_cpuinfo(cpu_usage):
+def send_state_info(state_info, ip = "localhost", port = 9090):
 	try:
 
 		# Make socket
-		transport = TSocket.TSocket('localhost', 9090)
+		transport = TSocket.TSocket(ip, port)
 
 		# Buffering is critical. Raw sockets are very slow
 		transport = TTransport.TBufferedTransport(transport)
@@ -28,13 +28,12 @@ def send_cpuinfo(cpu_usage):
 		protocol = TBinaryProtocol.TBinaryProtocol(transport)
 
 		# Create a client to use the protocol encoder
-		client = CpuStat.Client(protocol)
+		client = slaveStatusInfoService.Client(protocol)
 
 		# Connect!
 		transport.open()
 
-		cpu_info = client.get_cpuinfo(cpu_usage)
-		print "cpu_info:" + str(cpu_info)
+		client.reportStatusInfo(state_info)
 
 		transport.close()
 
@@ -42,5 +41,18 @@ def send_cpuinfo(cpu_usage):
 		print '%s' % (tx.message)
 
 
-cpu_usage = cpu_status.get_cpu_usage()
-send_cpuinfo(cpu_usage)
+
+ssi = StatusInfo()
+ssi.id = 11
+ssi.ip = "8.8.8.8"
+ssi.cupRatio = 12.4
+ssi.memTotal = 4423424424
+ssi.memUsed = 2423424424 
+ssi.memRatio = 42.4
+ssi.diskTotal = 242424234
+ssi.diskUsed = 142424234
+ssi.diskRatio = 33.4
+ssi.netDelay = 2323
+
+
+send_state_info(ssi, '10.188.54.45', 7911)
