@@ -5,15 +5,27 @@ sys.path.append('gen-py')
 
 from reportComputerStatus import slaveStatusInfoService
 from reportComputerStatus.ttypes import *
-#
-#sys.path.append('check_linux_status')
-#import cpu_status
+
+sys.path.append('check_linux_status')
+import cpu_status_2
+import local_ip
+import hd_status
+import net_status
+import memory_status
 
 from thrift import Thrift
 from thrift.transport import TSocket
 from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol
 
+
+
+NET_CARD_id		=	'eth1'
+URL				=	'weibo.com'
+SERVER_IP		= 	'10.188.54.45'
+#SERVER_IP		=	'localhost'
+#SERVER_PORT		=	9090
+SERVER_PORT		=	7911
 
 def send_state_info(state_info, ip = "localhost", port = 9090):
 	try:
@@ -43,16 +55,15 @@ def send_state_info(state_info, ip = "localhost", port = 9090):
 
 
 ssi = StatusInfo()
-ssi.id = 11
-ssi.ip = "8.8.8.8"
-ssi.cupRatio = 12.4
-ssi.memTotal = 4423424424
-ssi.memUsed = 2423424424 
-ssi.memRatio = 42.4
-ssi.diskTotal = 242424234
-ssi.diskUsed = 142424234
-ssi.diskRatio = 33.4
-ssi.netDelay = 2323
+ssi.id = 1
+ssi.ip = local_ip.get_local_ip(NET_CARD_id)
+ssi.cupRatio = float(cpu_status_2.cpu_status())
+ssi.memTotal = memory_status._get_mem_usage()[0]
+ssi.memUsed =  memory_status._get_mem_usage()[1]
+ssi.memRatio = memory_status._get_mem_usage()[2]
+ssi.diskTotal = hd_status.disk_stat()[0]
+ssi.diskUsed = hd_status.disk_stat()[1]
+ssi.diskRatio = hd_status.disk_stat()[2]
+ssi.netDelay = float(net_status.get_net_stat(URL))
 
-
-send_state_info(ssi, '10.188.54.45', 7911)
+send_state_info(ssi, SERVER_IP, SERVER_PORT)

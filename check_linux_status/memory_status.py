@@ -8,7 +8,8 @@ def _get_mem_usage():
 	get mem used by percent 
 	self.result = falot 
 	"""  
-	result={}  
+	result={}
+	output=[]
 	try:  
 		fd=open('/proc/meminfo', 'r')  
 		lines=fd.readlines()  
@@ -22,8 +23,16 @@ def _get_mem_usage():
 		key, value=match.groups(['key', 'value'])  
 		result[key]=int(value)  
 	#print "mem :", 100*(result["MemTotal"]-result["MemFree"])/result["MemTotal"]
-	print "MemTotal:" + str(result["MemTotal"]) + "\n"
-	print "MemFree:" + str(result["MemFree"]) + "\n"
-	return 100.0*(result["MemTotal"]-result["MemFree"])/result["MemTotal"]  
 
-print _get_mem_usage()
+	#print "MemTotal:" + str(result["MemTotal"]) + "\n"
+	#print "MemFree:" + str(result["MemFree"]) + "\n"
+	#return 100.0*(result["MemTotal"]-result["MemFree"])/result["MemTotal"]
+	output.append(result["MemTotal"])
+	## memUsed 
+	output.append(result["MemTotal"] - result["MemFree"])
+	## memRatio
+	output.append(100.0*(result["MemTotal"]-result["MemFree"])/result["MemTotal"])
+
+	return output
+
+#print  _get_mem_usage()
