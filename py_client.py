@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import sys
+import decimal
 sys.path.append('gen-py')
 
 from reportComputerStatus import slaveStatusInfoService
@@ -57,13 +58,23 @@ def send_state_info(state_info, ip = "localhost", port = 9090):
 ssi = StatusInfo()
 ssi.id = 1
 ssi.ip = local_ip.get_local_ip(NET_CARD_id)
-ssi.cupRatio = float(cpu_status_2.cpu_status())
+
+cpu_ratio = str(cpu_status_2.cpu_status())
+ssi.cupRatio = decimal.Decimal(cpu_ratio).quantize(decimal.Decimal('0.01'))
+
 ssi.memTotal = memory_status._get_mem_usage()[0]
 ssi.memUsed =  memory_status._get_mem_usage()[1]
-ssi.memRatio = memory_status._get_mem_usage()[2]
+
+memory_ratio = str(memory_status._get_mem_usage()[2])
+ssi.memRatio = decimal.Decimal(memory_ratio).quantize(decimal.Decimal('0.01'))
+
 ssi.diskTotal = hd_status.disk_stat()[0]
 ssi.diskUsed = hd_status.disk_stat()[1]
-ssi.diskRatio = hd_status.disk_stat()[2]
-ssi.netDelay = float(net_status.get_net_stat(URL))
+
+disk_ratio = str(hd_status.disk_stat()[2])
+ssi.diskRatio = decimal.Decimal(disk_ratio).quantize(decimal.Decimal('0.01'))
+
+net_delay = str(net_status.get_net_stat(URL))
+ssi.netDelay = decimal.Decimal(net_delay).quantize(decimal.Decimal('0.01'))
 
 send_state_info(ssi, SERVER_IP, SERVER_PORT)
