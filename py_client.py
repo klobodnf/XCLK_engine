@@ -78,3 +78,6 @@ net_delay = str(net_status.get_net_stat(URL))
 ssi.netDelay = decimal.Decimal(net_delay).quantize(decimal.Decimal('0.01'))
 
 send_state_info(ssi, SERVER_IP, SERVER_PORT)
+
+## very important! flag sucefull
+print "ok"
