@@ -14,4 +14,4 @@ def disk_stat():
 	output.append(100.0 * (hd['used']*1.0)/(hd['capacity'])*1.0)
 	return output
 
-print disk_stat()
+#disk_stat()

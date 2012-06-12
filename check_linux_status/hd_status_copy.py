@@ -30,7 +30,7 @@ def disk_stat():
 	output.append(hd['used'] / UNIT)
 	output.append(hd['available'] / UNIT)
 	output.append(hd['free'] / UNIT)
-#	output.append(100.0 * (hd['used']*1.0)/(hd['capacity'])*1.0)
+	output.append(100.0 * (hd['used']*1.0)/(hd['capacity'])*1.0)
 	return output
 
 print disk_stat()
