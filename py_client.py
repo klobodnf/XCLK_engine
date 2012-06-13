@@ -4,7 +4,7 @@ import sys
 import decimal
 sys.path.append('gen-py')
 
-from reportComputerStatus import slaveStatusInfoService
+from reportComputerStatus import SlaveStatusInfoService
 from reportComputerStatus.ttypes import *
 
 sys.path.append('check_linux_status')
@@ -13,6 +13,7 @@ import local_ip
 import hd_status
 import net_status
 import memory_status
+import sys_loadavg
 
 from thrift import Thrift
 from thrift.transport import TSocket
@@ -23,7 +24,7 @@ from thrift.protocol import TBinaryProtocol
 
 NET_CARD_id		=	'eth1'
 URL				=	'weibo.com'
-SERVER_IP		= 	'10.188.54.45'
+SERVER_IP		= 	'10.188.54.109'
 #SERVER_IP		=	'localhost'
 #SERVER_PORT		=	9090
 SERVER_PORT		=	7911
@@ -41,7 +42,7 @@ def send_state_info(state_info, ip = "localhost", port = 9090):
 		protocol = TBinaryProtocol.TBinaryProtocol(transport)
 
 		# Create a client to use the protocol encoder
-		client = slaveStatusInfoService.Client(protocol)
+		client = SlaveStatusInfoService.Client(protocol)
 
 		# Connect!
 		transport.open()
@@ -52,7 +53,6 @@ def send_state_info(state_info, ip = "localhost", port = 9090):
 
 	except Thrift.TException, tx:
 		print '%s' % (tx.message)
-
 
 
 ssi = StatusInfo()
@@ -76,6 +76,8 @@ ssi.diskRatio = decimal.Decimal(disk_ratio).quantize(decimal.Decimal('0.01'))
 
 net_delay = str(net_status.get_net_stat(URL))
 ssi.netDelay = decimal.Decimal(net_delay).quantize(decimal.Decimal('0.01'))
+
+ssi.loadAvg = float(sys_loadavg.loadavg_stat())
 
 send_state_info(ssi, SERVER_IP, SERVER_PORT)
 

@@ -2,16 +2,17 @@ namespace java com.xiu.recommender.monitor.thrift
 
 struct StatusInfo {
     1: i32  id	  #ID
-    2: string  ip  #¿Í»§¶Ë±¾»úIP  
-    3: double  cupRatio  #¿ÕÏĞCPU°Ù·Ö±È
-    4: i64  memTotal    #×Ü¼ÆÄÚ´æ
-    5: i64  memUsed	#ÒÑÓÃÄÚ´æ
-    6: double  memRatio  #ÒÑÓÃÄÚ´æ°Ù·Ö±È
-    7: i64  diskTotal    #×Ü¼ÆÄÚ´æ
-    8: i64  diskUsed	 #ÒÑÓÃÄÚ´æ
-    9: double  diskRatio  #ÒÑÓÃÄÚ´æ°Ù·Ö±È
-    10: double  netDelay  #ÍøÂçÑÓ³ÙºÁÃëÊı
+    2: string  ip  #å®¢æˆ·ç«¯æœ¬æœºIP  
+    3: double  cupRatio  #ç©ºé—²CPUç™¾åˆ†æ¯”
+    4: i64  memTotal    #æ€»è®¡å†…å­˜
+    5: i64  memUsed	#å·²ç”¨å†…å­˜
+    6: double  memRatio  #å·²ç”¨å†…å­˜ç™¾åˆ†æ¯”
+    7: i64  diskTotal    #æ€»è®¡å†…å­˜
+    8: i64  diskUsed	 #å·²ç”¨å†…å­˜
+    9: double  diskRatio  #å·²ç”¨å†…å­˜ç™¾åˆ†æ¯”
+    10: double  netDelay  #ç½‘ç»œå»¶è¿Ÿæ¯«ç§’æ•°
+    11: double  loadAvg  #15åˆ†é’Ÿæœºå™¨è´Ÿè½½
   }
- service slaveStatusInfoService {  #¿Í»§¶Ë×´Ì¬½Ó¿Ú
-    i32 reportStatusInfo(1:StatusInfo info) #ÉÏ´«¿Í»§¶ËµçÄÔ×´Ì¬£¬³É¹¦·µ»Ø1£¬Ê§°Ü·µ»Ø0
+ service SlaveStatusInfoService {  #å®¢æˆ·ç«¯çŠ¶æ€æ¥å£
+    i32 reportStatusInfo(1:StatusInfo info) #ä¸Šä¼ å®¢æˆ·ç«¯ç”µè„‘çŠ¶æ€ï¼ŒæˆåŠŸè¿”å›1ï¼Œå¤±è´¥è¿”å›0
  }

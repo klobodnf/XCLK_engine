@@ -4,7 +4,7 @@ import time, os
 
 MINUTE = 60
 HOUR = 3600
-SLEEP_TIME = MINUTE * 30
+SLEEP_TIME = 30
 
 CMD = 'python py_client.py'
 

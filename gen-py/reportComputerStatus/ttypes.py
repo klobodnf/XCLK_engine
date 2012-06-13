@@ -30,6 +30,7 @@ class StatusInfo:
    - diskUsed
    - diskRatio
    - netDelay
+   - loadAvg
   """
 
   thrift_spec = (
@@ -44,9 +45,10 @@ class StatusInfo:
     (8, TType.I64, 'diskUsed', None, None, ), # 8
     (9, TType.DOUBLE, 'diskRatio', None, None, ), # 9
     (10, TType.DOUBLE, 'netDelay', None, None, ), # 10
+    (11, TType.DOUBLE, 'loadAvg', None, None, ), # 11
   )
 
-  def __init__(self, id=None, ip=None, cupRatio=None, memTotal=None, memUsed=None, memRatio=None, diskTotal=None, diskUsed=None, diskRatio=None, netDelay=None,):
+  def __init__(self, id=None, ip=None, cupRatio=None, memTotal=None, memUsed=None, memRatio=None, diskTotal=None, diskUsed=None, diskRatio=None, netDelay=None, loadAvg=None,):
     self.id = id
     self.ip = ip
     self.cupRatio = cupRatio
@@ -57,6 +59,7 @@ class StatusInfo:
     self.diskUsed = diskUsed
     self.diskRatio = diskRatio
     self.netDelay = netDelay
+    self.loadAvg = loadAvg
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -117,6 +120,11 @@ class StatusInfo:
           self.netDelay = iprot.readDouble();
         else:
           iprot.skip(ftype)
+      elif fid == 11:
+        if ftype == TType.DOUBLE:
+          self.loadAvg = iprot.readDouble();
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -166,6 +174,10 @@ class StatusInfo:
     if self.netDelay is not None:
       oprot.writeFieldBegin('netDelay', TType.DOUBLE, 10)
       oprot.writeDouble(self.netDelay)
+      oprot.writeFieldEnd()
+    if self.loadAvg is not None:
+      oprot.writeFieldBegin('loadAvg', TType.DOUBLE, 11)
+      oprot.writeDouble(self.loadAvg)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
