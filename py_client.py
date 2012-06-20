@@ -2,6 +2,7 @@
 
 import sys
 import decimal
+import py_client_config
 sys.path.append('gen-py')
 
 from reportComputerStatus import SlaveStatusInfoService
@@ -22,12 +23,10 @@ from thrift.protocol import TBinaryProtocol
 
 
 
-NET_CARD_id		=	'eth1'
-URL				=	'weibo.com'
-SERVER_IP		= 	'10.188.54.109'
-#SERVER_IP		=	'localhost'
-#SERVER_PORT		=	9090
-SERVER_PORT		=	7911
+NET_CARD_id		=	py_client_config.NET_CARD_id
+URL				=	py_client_config.URL
+SERVER_IP		= 	py_client_config.SERVER_IP
+SERVER_PORT		=	py_client_config.SERVER_PORT
 
 def send_state_info(state_info, ip = "localhost", port = 9090):
 	try:
