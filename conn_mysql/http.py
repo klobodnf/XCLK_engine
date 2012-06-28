@@ -4,8 +4,10 @@ import urllib2
 import httplib
 import socket
 import re
-import client_MySQL
+import time
 
+import splite_query_sql
+import progressbar
 
 FLAG_TIMEOUT		= 0x0001
 FLAG_NOTFOUND 		= 0x0002
@@ -16,25 +18,31 @@ FLAG_OK 			= 0x0200
 
 FLAG_STATUS		= 0x0000
 
-BOOL_PRODUCT_A = 0x0001
-BOOL_PRODUCT_B = 0x0010
-BOOL_PRODUCT_C = 0x0100
+BOOL_PRODUCT_A = 0x00010000
+BOOL_PRODUCT_B = 0x00100000
+BOOL_PRODUCT_C = 0x01000000
 
 PRODUCT_STATUS = 0x0000
 
-print "now get the product id... please wait!"
-ALL_PRODUCT_ID = client_MySQL.GetProductID()
-print "now check the all link.."
-ALL_PRODUCT_POOL = []
+
+START_INDEX = 0
+ONCE_HANDLE = 1000
+
+
+
+
+START_TIME = time.time()
+print time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
 
 ## this just for test mode
 # test start######
-TEST_CHECK_NUM = 1000
-ALL_PRODUCT_ID = ALL_PRODUCT_ID[:TEST_CHECK_NUM]
+#TEST_CHECK_NUM = 600
+#ALL_PRODUCT_ID = ALL_PRODUCT_ID[:TEST_CHECK_NUM]
 # test end ######
 
 COUNT = 0
-DISPLAY_NUM = 10
+URL = "10.188.53.246"
+DISPLAY_NUM = 3
 USER_ID = "Ls8Y2Pe7k32w8R8lcSkR"
 
 def CheckProductIsRight(URL):
@@ -44,11 +52,13 @@ def CheckProductIsRight(URL):
 	global FLAG_NOT_ENOUGH 	
 	global FLAG_NOT_MATCH 	
 	global FLAG_OK 			
+
 	
 	## reset this flag every time.
 	FLAG_STATUS     = 0x0000
 
 	print URL
+
 	
 	## check the URL is OK?
 	try:
@@ -81,12 +91,19 @@ def CheckProductIsRight(URL):
 
 		if match:
 			#print len(match)
-			if len(match) == DISPLAY_NUM:
+			if len(match) >= 1:
 				FLAG_STATUS = FLAG_STATUS | FLAG_OK
 				return FLAG_STATUS
 			else:
 				FLAG_STATUS = FLAG_STATUS | FLAG_NOT_ENOUGH
 				return FLAG_STATUS
+
+#			if len(match) == DISPLAY_NUM:
+#				FLAG_STATUS = FLAG_STATUS | FLAG_OK
+#				return FLAG_STATUS
+#			else:
+#				FLAG_STATUS = FLAG_STATUS | FLAG_NOT_ENOUGH
+#				return FLAG_STATUS
 			#~ for msg in match:
 				#~ ID_CODES.append(msg.split('"')[3])
 		else:
@@ -103,56 +120,83 @@ def CheckProductIsRight(URL):
 ##############################################################################################
 ##############################################################################################
 
+#progress = progressbar.ProgressBar()
+ALL_PRODUCT_POOL = []
+while True:
+
+	print "now get the product id from MySQL, please wait...."
+	result,flag = splite_query_sql.GetProductID(START_INDEX, ONCE_HANDLE)	
+	print "now check the all link.."
+
+#	for product in progress(result):
+	for product in result:
+		#111 equal three,two,one is normal
+		product_item = [product[0], product[1], PRODUCT_STATUS]
 		
-for product in ALL_PRODUCT_ID:
-	
-	#111 equal three,two,one is normal
-	product_item = [product[0], PRODUCT_STATUS]
-	
-	URL_one = "http://10.188.53.247:8080/recommend/vav?userId=" + USER_ID + "&productId=" + str(product[0]) + "&num=" + str(DISPLAY_NUM) + "&callback=callback&catId=" + str(product[1])
-	URL_two = "http://10.188.53.247:8080/recommend/vav?userId=" + USER_ID + "&productId=" + str(product[0]) + "&num=" + str(DISPLAY_NUM) + "&callback=callback&catId=" + str(product[2])
-	URL_three = "http://10.188.53.247:8080/recommend/vav?userId=" + USER_ID + "&productId=" + str(product[0]) + "&num=" + str(DISPLAY_NUM) + "&callback=callback&catId=" + str(product[3])
-	
-	print "product id:" + str(product[0])
+		URL_one = "http://" + URL + "/recommend/vav?userId=" + USER_ID + "&productId=" + str(product[0]) + "&num=" + str(DISPLAY_NUM) + "&callback=callback&catId=" + str(product[1])
+		#URL_two = "http://10.188.53.247:8080/recommend/vav?userId=" + USER_ID + "&productId=" + str(product[0]) + "&num=" + str(DISPLAY_NUM) + "&callback=callback&catId=" + str(product[2])
+		#URL_three = "http://10.188.53.247:8080/recommend/vav?userId=" + USER_ID + "&productId=" + str(product[0]) + "&num=" + str(DISPLAY_NUM) + "&callback=callback&catId=" + str(product[3])
+		
+		print "product id:" + str(product[0])
+		
+
+		tmp_result = CheckProductIsRight(URL_one)
+		#~ print "%x" %tmp_result
+		if  tmp_result & FLAG_OK:
+			print "product is OK."
+		else:
+			print "product is ERROR."
+		product_item[2] = product_item[2] | BOOL_PRODUCT_A | tmp_result
+		print "========================"
+		
+			
+		
+	#	tmp_result = CheckProductIsRight(URL_two)
+	#	#~ print "%x" %tmp_result
+	#	if  tmp_result & FLAG_OK:
+	#		product_item[1] = product_item[1] | BOOL_PRODUCT_B
+	#		print "B is OK."
+	#	else:
+	#		print "B is ERROR."
+	#
+	#	print "========================"
+	#	
+	#	
+	#	tmp_result = CheckProductIsRight(URL_three)
+	#	#~ print "%x" %tmp_result
+	#	if  tmp_result & FLAG_OK:
+	#		product_item[1] = product_item[1] | BOOL_PRODUCT_C
+	#		print "C is OK."
+	#	else:
+	#		print "C is ERROR."
+
+			
+		ALL_PRODUCT_POOL.append(product_item)
+		COUNT += 1
+		print COUNT
+		print "*** * *** * *** * *** * *** * *** * *** *"
+		print "*** * *** * *** * *** * *** * *** * *** *"
+
 	
 
-	tmp_result = CheckProductIsRight(URL_one)
-	#~ print "%x" %tmp_result
-	if  tmp_result & FLAG_OK:
-		product_item[1] = product_item[1] | BOOL_PRODUCT_A
-		print "A is OK."
-	else:
-		print "A is ERROR."
-	print "========================"
-	
-		
-	
-	tmp_result = CheckProductIsRight(URL_two)
-	#~ print "%x" %tmp_result
-	if  tmp_result & FLAG_OK:
-		product_item[1] = product_item[1] | BOOL_PRODUCT_B
-		print "B is OK."
-	else:
-		print "B is ERROR."
+	if flag == 1:
+		break
 
-	print "========================"
-	
-	
-	tmp_result = CheckProductIsRight(URL_three)
-	#~ print "%x" %tmp_result
-	if  tmp_result & FLAG_OK:
-		product_item[1] = product_item[1] | BOOL_PRODUCT_C
-		print "C is OK."
-	else:
-		print "C is ERROR."
+	START_INDEX += ONCE_HANDLE
 
-		
-	ALL_PRODUCT_POOL.append(product_item)
-	COUNT += 1
-	print COUNT
-	print "*** * *** * *** * *** * *** * *** * *** *"
-	print "*** * *** * *** * *** * *** * *** * *** *"
+
 	
 for result in ALL_PRODUCT_POOL:
 	#print "nHex = %x,nDec = %d,nOct = %o" %(nHex,nHex,nHex)
-	print "[%d, %x]" %(result[0], result[1])
+	print "[%d, %d, %x]" %(int(result[0]), int(result[1]), result[2])
+
+
+
+END_TIME = time.time()
+SPEND_TIME = END_TIME - START_TIME
+SPEND_TIME_H = SPEND_TIME / 3600
+SPEND_TIME_M = (SPEND_TIME % 3600) / 60
+SPEND_TIME_S = (SPEND_TIME % 3600) % 60
+
+print "this time waste time : %dhour %dminute %dsecond" % (SPEND_TIME_H,SPEND_TIME_M,SPEND_TIME_S)
+print time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
