@@ -121,7 +121,7 @@ def CheckProductIsRight(URL):
 ##############################################################################################
 
 #progress = progressbar.ProgressBar()
-ALL_PRODUCT_POOL = []
+#ALL_PRODUCT_POOL = []
 while True:
 
 	print "now get the product id from MySQL, please wait...."
@@ -130,7 +130,10 @@ while True:
 
 #	for product in progress(result):
 	for product in result:
-		#111 equal three,two,one is normal
+
+		if((len(product[0]) == 0) or (len(product[1]) == 0)):
+			print "product id or cat id are empty"
+			break
 		product_item = [product[0], product[1], PRODUCT_STATUS]
 		
 		URL_one = "http://" + URL + "/recommend/vav?userId=" + USER_ID + "&productId=" + str(product[0]) + "&num=" + str(DISPLAY_NUM) + "&callback=callback&catId=" + str(product[1])
@@ -147,6 +150,7 @@ while True:
 		else:
 			print "product is ERROR."
 		product_item[2] = product_item[2] | BOOL_PRODUCT_A | tmp_result
+		print "[%d, %d, %x]" %(int(product_item[0]), int(product_item[1]), product_item[2])
 		print "========================"
 		
 			
@@ -171,7 +175,7 @@ while True:
 	#		print "C is ERROR."
 
 			
-		ALL_PRODUCT_POOL.append(product_item)
+#		ALL_PRODUCT_POOL.append(product_item)
 		COUNT += 1
 		print COUNT
 		print "*** * *** * *** * *** * *** * *** * *** *"
@@ -186,9 +190,9 @@ while True:
 
 
 	
-for result in ALL_PRODUCT_POOL:
-	#print "nHex = %x,nDec = %d,nOct = %o" %(nHex,nHex,nHex)
-	print "[%d, %d, %x]" %(int(result[0]), int(result[1]), result[2])
+#for result in ALL_PRODUCT_POOL:
+#	#print "nHex = %x,nDec = %d,nOct = %o" %(nHex,nHex,nHex)
+#	print "[%d, %d, %x]" %(int(result[0]), int(result[1]), result[2])
 
 
 
